@@ -14,47 +14,49 @@ spring:
   cloud:
     nacos:
       discovery:
-        server-addr: localhost:8848
+        enabled: false
+      config:
+        enabled: false
     gateway:
       discovery:
         locator:
-          enabled: true
+          enabled: false
           lower-case-service-id: true
       routes:
         - id: ecommerce-iam
-          uri: lb://ecommerce-iam
+          uri: http://localhost:8001
           predicates:
             - Path=/iam/**
         - id: ecommerce-product
-          uri: lb://ecommerce-product
+          uri: http://localhost:8002
           predicates:
             - Path=/product/**
         - id: ecommerce-order
-          uri: lb://ecommerce-order
+          uri: http://localhost:8003
           predicates:
             - Path=/order/**
         - id: ecommerce-recommendation
-          uri: lb://ecommerce-recommendation
+          uri: http://localhost:8004
           predicates:
             - Path=/recommend/**
         - id: ecommerce-approval
-          uri: lb://ecommerce-approval
+          uri: http://localhost:8005
           predicates:
             - Path=/approval/**
         - id: ecommerce-analytics
-          uri: lb://ecommerce-analytics
+          uri: http://localhost:8006
           predicates:
             - Path=/analytics/**
         - id: ecommerce-notification
-          uri: lb://ecommerce-notification
+          uri: http://localhost:8007
           predicates:
             - Path=/notification/**
         - id: ecommerce-payment
-          uri: lb://ecommerce-payment
+          uri: http://localhost:8008
           predicates:
             - Path=/payment/**
         - id: ecommerce-audit
-          uri: lb://ecommerce-audit
+          uri: http://localhost:8009
           predicates:
             - Path=/audit/**
 
@@ -63,12 +65,21 @@ gateway:
     exclude-paths:
       - /iam/auth/login
       - /iam/auth/captcha
+      - /iam/health
+      - /product/health
+      - /order/health
+      - /recommend/health
+      - /approval/health
+      - /analytics/health
+      - /notification/health
+      - /payment/health
+      - /audit/health
       - /payment/callback/**
       - /payment/logistics/callback/**
   rate-limit:
     enabled: true
-    default-limit-per-second: 100
-    burst-capacity: 200
+    default-limit-per-second: 500
+    burst-capacity: 1000
   trace:
     enabled: true
     header-name: X-Trace-Id
@@ -78,5 +89,5 @@ knife4j:
     enabled: true
     strategy: discover
     discover:
-      enabled: true
+      enabled: false
       version: openapi3

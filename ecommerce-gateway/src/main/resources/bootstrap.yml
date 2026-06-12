@@ -1,0 +1,12 @@
+spring:
+  application:
+    name: ecommerce-gateway
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+        namespace: ecommerce
+      config:
+        server-addr: localhost:8848
+        namespace: ecommerce
+        file-extension: yml

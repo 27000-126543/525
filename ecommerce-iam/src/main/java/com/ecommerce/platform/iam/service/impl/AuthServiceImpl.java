@@ -2,7 +2,9 @@ package com.ecommerce.platform.iam.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.StrUtil;
+import com.alibaba.fastjson2.JSON;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.ecommerce.platform.common.constant.RedisConstants;
 import com.ecommerce.platform.common.context.TenantContext;
 import com.ecommerce.platform.common.context.UserContext;
 import com.ecommerce.platform.common.exception.BusinessException;
@@ -20,7 +22,10 @@ import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 @Slf4j
@@ -73,6 +78,17 @@ public class AuthServiceImpl implements AuthService {
                 .token(token)
                 .build();
         UserContext.set(userContext);
+
+        Map<String, Object> tokenInfo = new HashMap<>();
+        tokenInfo.put("userId", user.getId());
+        tokenInfo.put("username", user.getUsername());
+        tokenInfo.put("tenantId", tenant.getId());
+        tokenInfo.put("tenantCode", tenant.getTenantCode());
+        tokenInfo.put("orgId", user.getOrgId());
+        tokenInfo.put("roleCodes", roleCodes);
+        tokenInfo.put("createTime", System.currentTimeMillis());
+        String tokenKey = "auth:token:" + token;
+        redisUtil.set(tokenKey, JSON.toJSONString(tokenInfo), 24, TimeUnit.HOURS);
 
         user.setLastLoginTime(LocalDateTime.now());
         userMapper.updateById(user);

@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.extension.plugins.handler.TenantLineHandler;
 import com.ecommerce.platform.common.context.TenantContext;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.expression.LongValue;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 import java.util.Arrays;
 import java.util.List;
 
 @Component
+@ConditionalOnClass(TenantLineHandler.class)
 public class TenantLineHandlerImpl implements TenantLineHandler {
 
     private static final List<String> IGNORE_TABLES = Arrays.asList(

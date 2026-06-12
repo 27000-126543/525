@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.inner.PaginationInnerIntercept
 import com.baomidou.mybatisplus.extension.plugins.inner.TenantLineInnerInterceptor;
 import com.ecommerce.platform.common.tenant.TenantLineHandlerImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 @Configuration
+@ConditionalOnClass(MybatisPlusInterceptor.class)
 @RequiredArgsConstructor
 public class MybatisPlusConfig {
 

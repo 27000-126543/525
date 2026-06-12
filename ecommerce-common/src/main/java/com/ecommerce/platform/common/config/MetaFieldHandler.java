@@ -3,11 +3,13 @@ package com.ecommerce.platform.common.config;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import com.ecommerce.platform.common.context.UserContext;
 import org.apache.ibatis.reflection.MetaObject;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 
 @Component
+@ConditionalOnClass(MetaObjectHandler.class)
 public class MetaFieldHandler implements MetaObjectHandler {
 
     @Override
