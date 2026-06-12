@@ -1,0 +1,57 @@
+server:
+  port: 8006
+  servlet:
+    context-path: /analytics
+
+spring:
+  application:
+    name: ecommerce-analytics
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 6
+      timeout: 3000ms
+  elasticsearch:
+    uris: http://localhost:9200
+    username: elastic
+    password: elastic
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+      bindings:
+        order-event-in:
+          destination: order-event-topic
+          content-type: application/json
+          group: analytics-order-group
+        product-event-in:
+          destination: product-event-topic
+          content-type: application/json
+          group: analytics-product-group
+        user-behavior-in:
+          destination: user-behavior-topic
+          content-type: application/json
+          group: analytics-behavior-group
+
+analytics:
+  dashboard:
+    cache-seconds: 30
+  alert:
+    check-interval-seconds: 60
+  aggregation:
+    realtime-window-minutes: 5
+    hourly-enabled: true
+    daily-enabled: true
+
+knife4j:
+  enable: true
+  openapi:
+    title: Analytics Service API
+    description: 实时数据分析服务
+    version: 1.0.0

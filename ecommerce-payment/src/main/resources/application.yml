@@ -1,0 +1,88 @@
+server:
+  port: 8008
+  servlet:
+    context-path: /payment
+
+spring:
+  application:
+    name: ecommerce-payment
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ecommerce_payment?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 8
+      timeout: 3000ms
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+      bindings:
+        pay-success-out:
+          destination: pay-success-topic
+          content-type: application/json
+        pay-notify-in:
+          destination: pay-notify-topic
+          content-type: application/json
+          group: pay-notify-group
+        logistics-notify-in:
+          destination: logistics-notify-topic
+          content-type: application/json
+          group: logistics-notify-group
+
+payment:
+  channels:
+    alipay:
+      enabled: true
+      appId: 
+      privateKey: 
+      publicKey: 
+      notifyUrl: 
+      returnUrl: 
+    wechatpay:
+      enabled: true
+      appId: 
+      mchId: 
+      apiKey: 
+      notifyUrl: 
+    unionpay:
+      enabled: false
+  reconciliation:
+    enabled: true
+    cron: "0 0 2 * * ?"
+    days-to-check: 3
+  refund:
+    max-retry-times: 3
+    retry-interval-minutes: 30
+
+logistics:
+  providers:
+    sf:
+      enabled: true
+      apiUrl: 
+      appKey: 
+    yto:
+      enabled: true
+      apiUrl: 
+      appKey: 
+    zto:
+      enabled: true
+      apiUrl: 
+      appKey: 
+  sync-interval-minutes: 30
+
+knife4j:
+  enable: true
+  openapi:
+    title: Payment Service API
+    description: 支付与物流回调对账服务
+    version: 1.0.0

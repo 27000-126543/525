@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.platform.iam.mapper.SysUserMapper">
+
+    <resultMap id="userResultMap" type="com.ecommerce.platform.iam.entity.SysUser">
+        <id column="id" property="id"/>
+        <result column="username" property="username"/>
+        <result column="password" property="password"/>
+        <result column="nickname" property="nickname"/>
+        <result column="avatar" property="avatar"/>
+        <result column="email" property="email"/>
+        <result column="mobile" property="mobile"/>
+        <result column="gender" property="gender"/>
+        <result column="status" property="status"/>
+        <result column="org_id" property="orgId"/>
+        <result column="post_id" property="postId"/>
+        <result column="remark" property="remark"/>
+        <result column="last_login_time" property="lastLoginTime"/>
+        <result column="last_login_ip" property="lastLoginIp"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="tenant_id" property="tenantId"/>
+    </resultMap>
+
+    <select id="selectUserPage" resultMap="userResultMap">
+        SELECT u.*, o.org_name as org_name, p.post_name as post_name
+        FROM sys_user u
+        LEFT JOIN sys_org o ON u.org_id = o.id AND o.deleted = 0
+        LEFT JOIN sys_post p ON u.post_id = p.id AND p.deleted = 0
+        <where>
+            u.deleted = 0
+            <if test="user.username != null and user.username != ''">
+                AND u.username LIKE CONCAT('%', #{user.username}, '%')
+            </if>
+            <if test="user.nickname != null and user.nickname != ''">
+                AND u.nickname LIKE CONCAT('%', #{user.nickname}, '%')
+            </if>
+            <if test="user.status != null">
+                AND u.status = #{user.status}
+            </if>
+            <if test="user.orgId != null">
+                AND u.org_id = #{user.orgId}
+            </if>
+        </where>
+        ORDER BY u.create_time DESC
+    </select>
+
+    <select id="selectRoleIdsByUserId" resultType="java.lang.Long">
+        SELECT ur.role_id
+        FROM sys_user_role ur
+        INNER JOIN sys_role r ON ur.role_id = r.id AND r.deleted = 0
+        WHERE ur.user_id = #{userId}
+    </select>
+
+    <select id="selectPermsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT m.perms
+        FROM sys_user_role ur
+        INNER JOIN sys_role_menu rm ON ur.role_id = rm.role_id
+        INNER JOIN sys_menu m ON rm.menu_id = m.id AND m.deleted = 0 AND m.perms IS NOT NULL
+        WHERE ur.user_id = #{userId}
+        AND m.perms != ''
+    </select>
+</mapper>

@@ -1,0 +1,82 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: ecommerce-gateway
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 0
+      timeout: 3000ms
+  cloud:
+    nacos:
+      discovery:
+        server-addr: localhost:8848
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+          lower-case-service-id: true
+      routes:
+        - id: ecommerce-iam
+          uri: lb://ecommerce-iam
+          predicates:
+            - Path=/iam/**
+        - id: ecommerce-product
+          uri: lb://ecommerce-product
+          predicates:
+            - Path=/product/**
+        - id: ecommerce-order
+          uri: lb://ecommerce-order
+          predicates:
+            - Path=/order/**
+        - id: ecommerce-recommendation
+          uri: lb://ecommerce-recommendation
+          predicates:
+            - Path=/recommend/**
+        - id: ecommerce-approval
+          uri: lb://ecommerce-approval
+          predicates:
+            - Path=/approval/**
+        - id: ecommerce-analytics
+          uri: lb://ecommerce-analytics
+          predicates:
+            - Path=/analytics/**
+        - id: ecommerce-notification
+          uri: lb://ecommerce-notification
+          predicates:
+            - Path=/notification/**
+        - id: ecommerce-payment
+          uri: lb://ecommerce-payment
+          predicates:
+            - Path=/payment/**
+        - id: ecommerce-audit
+          uri: lb://ecommerce-audit
+          predicates:
+            - Path=/audit/**
+
+gateway:
+  auth:
+    exclude-paths:
+      - /iam/auth/login
+      - /iam/auth/captcha
+      - /payment/callback/**
+      - /payment/logistics/callback/**
+  rate-limit:
+    enabled: true
+    default-limit-per-second: 100
+    burst-capacity: 200
+  trace:
+    enabled: true
+    header-name: X-Trace-Id
+
+knife4j:
+  gateway:
+    enabled: true
+    strategy: discover
+    discover:
+      enabled: true
+      version: openapi3

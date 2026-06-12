@@ -1,0 +1,79 @@
+server:
+  port: 8007
+  servlet:
+    context-path: /notification
+
+spring:
+  application:
+    name: ecommerce-notification
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ecommerce_notification?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 7
+      timeout: 3000ms
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+      bindings:
+        notification-in:
+          destination: notification-topic
+          content-type: application/json
+          group: notification-group
+        notification-dlq:
+          destination: notification-dlq-topic
+          content-type: application/json
+
+notification:
+  channels:
+    sms:
+      enabled: true
+      max-per-second: 100
+      max-per-minute: 1000
+      retry-times: 3
+      retry-interval-seconds: 60
+      priority: 1
+    email:
+      enabled: true
+      max-per-second: 50
+      max-per-minute: 500
+      retry-times: 3
+      retry-interval-seconds: 120
+      priority: 2
+    inapp:
+      enabled: true
+      max-per-second: 500
+      max-per-minute: 5000
+      retry-times: 1
+      retry-interval-seconds: 30
+      priority: 3
+    apppush:
+      enabled: true
+      max-per-second: 200
+      max-per-minute: 2000
+      retry-times: 3
+      retry-interval-seconds: 90
+      priority: 1
+  templates:
+    cache-seconds: 300
+  rate-limit:
+    enabled: true
+    default-limit: 1000
+
+knife4j:
+  enable: true
+  openapi:
+    title: Notification Service API
+    description: 多渠道消息推送服务
+    version: 1.0.0

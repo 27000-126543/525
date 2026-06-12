@@ -1,0 +1,53 @@
+server:
+  port: 8009
+  servlet:
+    context-path: /audit
+
+spring:
+  application:
+    name: ecommerce-audit
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 9
+      timeout: 3000ms
+  elasticsearch:
+    uris: http://localhost:9200
+    username: elastic
+    password: elastic
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+      bindings:
+        audit-log-in:
+          destination: audit-log-topic
+          content-type: application/json
+          group: audit-log-group
+        trace-log-in:
+          destination: trace-log-topic
+          content-type: application/json
+          group: trace-log-group
+
+audit:
+  elasticsearch:
+    audit-index: audit-log
+    trace-index: trace-log
+  retention:
+    audit-days: 180
+    trace-days: 30
+  export:
+    max-rows: 100000
+
+knife4j:
+  enable: true
+  openapi:
+    title: Audit Service API
+    description: 全链路日志追踪与审计服务
+    version: 1.0.0

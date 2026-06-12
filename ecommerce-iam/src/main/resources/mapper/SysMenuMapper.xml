@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ecommerce.platform.iam.mapper.SysMenuMapper">
+
+    <resultMap id="menuResultMap" type="com.ecommerce.platform.iam.entity.SysMenu">
+        <id column="id" property="id"/>
+        <result column="menu_name" property="menuName"/>
+        <result column="parent_id" property="parentId"/>
+        <result column="sort_order" property="sortOrder"/>
+        <result column="path" property="path"/>
+        <result column="component" property="component"/>
+        <result column="perms" property="perms"/>
+        <result column="menu_type" property="menuType"/>
+        <result column="icon" property="icon"/>
+        <result column="visible" property="visible"/>
+        <result column="status" property="status"/>
+        <result column="remark" property="remark"/>
+        <result column="create_by" property="createBy"/>
+        <result column="create_time" property="createTime"/>
+        <result column="update_by" property="updateBy"/>
+        <result column="update_time" property="updateTime"/>
+        <result column="deleted" property="deleted"/>
+        <result column="tenant_id" property="tenantId"/>
+    </resultMap>
+
+    <select id="selectMenusByUserId" resultMap="menuResultMap">
+        SELECT DISTINCT m.*
+        FROM sys_user_role ur
+        INNER JOIN sys_role_menu rm ON ur.role_id = rm.role_id
+        INNER JOIN sys_menu m ON rm.menu_id = m.id
+        WHERE ur.user_id = #{userId}
+        AND m.deleted = 0
+        AND m.status = 1
+        ORDER BY m.sort_order
+    </select>
+
+    <select id="selectMenusByRoleId" resultMap="menuResultMap">
+        SELECT m.*
+        FROM sys_role_menu rm
+        INNER JOIN sys_menu m ON rm.menu_id = m.id
+        WHERE rm.role_id = #{roleId}
+        AND m.deleted = 0
+        ORDER BY m.sort_order
+    </select>
+
+    <select id="selectPermsByUserId" resultType="java.lang.String">
+        SELECT DISTINCT m.perms
+        FROM sys_user_role ur
+        INNER JOIN sys_role_menu rm ON ur.role_id = rm.role_id
+        INNER JOIN sys_menu m ON rm.menu_id = m.id
+        WHERE ur.user_id = #{userId}
+        AND m.deleted = 0
+        AND m.perms IS NOT NULL
+        AND m.perms != ''
+    </select>
+</mapper>

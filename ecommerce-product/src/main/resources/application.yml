@@ -1,0 +1,65 @@
+server:
+  port: 8002
+  servlet:
+    context-path: /product
+
+spring:
+  application:
+    name: ecommerce-product
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://localhost:3306/ecommerce_product?useUnicode=true&characterEncoding=utf8&useSSL=false&serverTimezone=Asia/Shanghai&allowPublicKeyRetrieval=true
+    username: root
+    password: root
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      password:
+      database: 2
+      timeout: 5000ms
+      lettuce:
+        pool:
+          max-active: 50
+          max-idle: 20
+          min-idle: 10
+  jackson:
+    date-format: yyyy-MM-dd HH:mm:ss
+    time-zone: Asia/Shanghai
+  cloud:
+    stream:
+      rocketmq:
+        binder:
+          name-server: localhost:9876
+      bindings:
+        stock-deduction-out:
+          destination: stock-deduction-topic
+          content-type: application/json
+        stock-deduction-in:
+          destination: stock-deduction-topic
+          content-type: application/json
+          group: stock-deduction-group
+
+mybatis-plus:
+  mapper-locations: classpath:mapper/*.xml
+  type-aliases-package: com.ecommerce.platform.product.entity
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    db-config:
+      id-type: ASSIGN_ID
+      logic-delete-field: deleted
+      logic-delete-value: 1
+      logic-not-delete-value: 0
+
+knife4j:
+  enable: true
+  openapi:
+    title: Product Service API
+    description: 商品与库存服务
+    version: 1.0.0
+
+seckill:
+  stock-prefix: seckill:stock:
+  user-prefix: seckill:user:
+  limit-per-user: 1
